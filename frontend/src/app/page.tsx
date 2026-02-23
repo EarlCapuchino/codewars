@@ -16,9 +16,9 @@ function AppContent() {
   return (
     <>
       <Header />
-      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-8">
+      <main className="flex-1 max-w-4xl w-full mx-auto px-4 py-6">
         {state.error && (state.view === 'setup' || state.view === 'ai-setup') && (
-          <div className="mb-6">
+          <div className="mb-4">
             <ErrorBanner message={state.error} onDismiss={dismissError} />
           </div>
         )}
@@ -29,8 +29,18 @@ function AppContent() {
         {state.view === 'ai-game' && <AiGameBoard />}
         {state.view === 'leaderboard' && <Leaderboard />}
       </main>
-      <footer className="text-center text-xs text-gray-600 py-4 border-t border-surface-800">
-        CodeWords &copy; {new Date().getFullYear()} &middot; Built with Next.js &amp; Express
+
+      <footer className="status-bar">
+        <span className="status-bar-section">
+          READY
+        </span>
+        <span className="status-bar-section">
+          MODE: {state.view.toUpperCase().replace('-', '_')}
+        </span>
+        <div className="flex-1" />
+        <span className="status-bar-section">
+          CODEWORDS &copy; {new Date().getFullYear()}
+        </span>
       </footer>
     </>
   );

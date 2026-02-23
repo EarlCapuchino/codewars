@@ -33,7 +33,14 @@ export default function Keyboard({
   );
 
   return (
-    <div className="flex flex-col items-center gap-1.5" role="group" aria-label="Virtual keyboard">
+    <div
+      className="flex flex-col items-center gap-1 p-3 border border-crt-border bg-crt-surface"
+      role="group"
+      aria-label="Virtual keyboard"
+    >
+      <div className="text-[10px] font-mono text-terminal-muted uppercase tracking-wider mb-1">
+        Input Terminal
+      </div>
       {ROWS.map((row, ri) => (
         <div key={ri} className="flex gap-1 sm:gap-1.5">
           {row.map((key) => {

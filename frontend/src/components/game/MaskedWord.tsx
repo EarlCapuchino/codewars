@@ -12,7 +12,7 @@ export default function MaskedWord({ maskedWord }: MaskedWordProps) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 py-4"
+      className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 py-4"
       role="status"
       aria-label={`Word: ${maskedWord.replace(/_/g, 'blank')}`}
     >
@@ -22,7 +22,7 @@ export default function MaskedWord({ maskedWord }: MaskedWordProps) {
           className={`letter-tile ${ch === '_' ? 'letter-tile--blank' : 'letter-tile--revealed'}`}
           aria-label={ch === '_' ? 'blank' : ch}
         >
-          {ch === '_' ? '\u00A0' : ch.toUpperCase()}
+          {ch !== '_' && ch.toUpperCase()}
         </div>
       ))}
     </div>

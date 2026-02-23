@@ -9,22 +9,22 @@ interface PlayerInfoProps {
 export default function PlayerInfo({ players, currentPlayer }: PlayerInfoProps) {
   if (players.length <= 1 && currentPlayer) {
     return (
-      <div className="text-center" aria-label="Player status">
-        <p className="text-lg font-semibold text-brand-yellow-400">{currentPlayer.name}</p>
-        <div className="flex items-center justify-center gap-1.5 mt-1">
+      <div className="text-center font-mono" aria-label="Player status">
+        <p className="text-sm text-amber-terminal text-glow-amber">{currentPlayer.name}</p>
+        <div className="flex items-center justify-center gap-1 mt-1.5">
           {Array.from({ length: 6 }, (_, i) => (
             <span
               key={i}
-              className={`w-3 h-3 rounded-full transition-colors ${
+              className={`attempt-dot ${
                 i < currentPlayer.remainingAttempts
-                  ? 'bg-brand-green-500'
-                  : 'bg-red-500/60'
+                  ? 'attempt-dot--active'
+                  : 'attempt-dot--used'
               }`}
               aria-hidden="true"
             />
           ))}
-          <span className="ml-2 text-sm text-gray-400">
-            {currentPlayer.remainingAttempts} left
+          <span className="ml-2 text-xs text-terminal-muted">
+            [{currentPlayer.remainingAttempts}/6 ATTEMPTS]
           </span>
         </div>
       </div>
@@ -32,44 +32,44 @@ export default function PlayerInfo({ players, currentPlayer }: PlayerInfoProps) 
   }
 
   return (
-    <div className="flex flex-wrap justify-center gap-3" aria-label="All players">
+    <div className="flex flex-wrap justify-center gap-2" aria-label="All players">
       {players.map((player) => {
         const isCurrent = currentPlayer?.id === player.id;
         return (
           <div
             key={player.id}
             className={`
-              flex flex-col items-center gap-1 px-4 py-2 rounded-lg border transition-all
+              flex flex-col items-center gap-1 px-3 py-2 border font-mono transition-all
               ${player.eliminated
-                ? 'border-red-800 bg-red-900/20 opacity-50'
+                ? 'border-error-border bg-error-bg opacity-50'
                 : isCurrent
-                  ? 'border-brand-yellow-400 bg-brand-yellow-500/10 ring-1 ring-brand-yellow-400/40'
-                  : 'border-surface-600 bg-surface-700'}
+                  ? 'border-terminal-dark bg-terminal-bg'
+                  : 'border-crt-border bg-crt-surface'}
             `}
             aria-label={`${player.name}: ${player.remainingAttempts} attempts left${player.eliminated ? ', eliminated' : ''}${isCurrent ? ', current turn' : ''}`}
           >
-            <span className={`text-sm font-semibold ${isCurrent ? 'text-brand-yellow-300' : 'text-gray-300'}`}>
+            <span className={`text-xs font-medium ${isCurrent ? 'text-terminal-green text-glow' : 'text-terminal-muted'}`}>
               {player.name}
             </span>
-            <div className="flex gap-1">
+            <div className="flex gap-0.5">
               {Array.from({ length: 6 }, (_, i) => (
                 <span
                   key={i}
-                  className={`w-2 h-2 rounded-full ${
-                    i < player.remainingAttempts ? 'bg-brand-green-500' : 'bg-red-500/60'
+                  className={`w-1.5 h-1.5 ${
+                    i < player.remainingAttempts ? 'bg-terminal-green' : 'bg-error-red'
                   }`}
                   aria-hidden="true"
                 />
               ))}
             </div>
             {isCurrent && !player.eliminated && (
-              <span className="text-[10px] font-medium text-brand-yellow-400 uppercase tracking-wider">
-                Turn
+              <span className="text-[9px] text-amber-terminal uppercase tracking-widest">
+                &gt; ACTIVE
               </span>
             )}
             {player.eliminated && (
-              <span className="text-[10px] font-medium text-red-400 uppercase tracking-wider">
-                Out
+              <span className="text-[9px] text-error-red uppercase tracking-widest">
+                [DEAD]
               </span>
             )}
           </div>

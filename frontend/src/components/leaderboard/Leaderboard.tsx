@@ -13,75 +13,85 @@ export default function Leaderboard() {
     fetchLeaderboard();
   }, [fetchLeaderboard]);
 
-  if (loading) return <Loading message="Loading leaderboard..." />;
+  if (loading) return <Loading message="Querying records..." />;
 
   return (
-    <section className="card max-w-2xl mx-auto animate-slide-up" aria-label="Leaderboard">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-brand-yellow-400">Leaderboard</h2>
-        {leaderboard.length > 0 && (
-          <Button variant="danger" size="sm" onClick={clearLeaderboard}>
-            Reset
-          </Button>
-        )}
+    <section className="win-window max-w-2xl mx-auto animate-slide-up" aria-label="Leaderboard">
+      <div className="win-titlebar">
+        <span className="win-titlebar-text">SCOREBOARD.DAT</span>
+        <div className="win-titlebar-buttons">
+          {leaderboard.length > 0 && (
+            <button onClick={clearLeaderboard} className="win-titlebar-btn" title="Clear records">
+              DEL
+            </button>
+          )}
+          <button onClick={newGame} className="win-titlebar-btn" title="Close">
+            ×
+          </button>
+        </div>
       </div>
 
-      {leaderboard.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg mb-4">No games played yet.</p>
-          <Button onClick={newGame}>Start Playing</Button>
-        </div>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left" aria-label="Leaderboard rankings">
-            <thead>
-              <tr className="border-b border-surface-600 text-sm text-gray-400">
-                <th className="py-3 px-2 w-10">#</th>
-                <th className="py-3 px-2">Player</th>
-                <th className="py-3 px-2 text-center">Wins</th>
-                <th className="py-3 px-2 text-center">Losses</th>
-                <th className="py-3 px-2 text-center">Games</th>
-                <th className="py-3 px-2 text-center">Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaderboard.map((entry, i) => (
-                <tr
-                  key={entry.playerName}
-                  className="border-b border-surface-700 hover:bg-surface-700/50 transition-colors"
-                >
-                  <td className="py-3 px-2">
-                    {i === 0 && <span className="text-brand-yellow-400 font-bold">1st</span>}
-                    {i === 1 && <span className="text-gray-300 font-bold">2nd</span>}
-                    {i === 2 && <span className="text-orange-400 font-bold">3rd</span>}
-                    {i > 2 && <span className="text-gray-500">{i + 1}</span>}
-                  </td>
-                  <td className="py-3 px-2 font-semibold text-gray-200">
-                    {entry.playerName}
-                  </td>
-                  <td className="py-3 px-2 text-center text-brand-green-400 font-semibold">
-                    {entry.wins}
-                  </td>
-                  <td className="py-3 px-2 text-center text-red-400">
-                    {entry.losses}
-                  </td>
-                  <td className="py-3 px-2 text-center text-gray-400">
-                    {entry.gamesPlayed}
-                  </td>
-                  <td className="py-3 px-2 text-center text-brand-yellow-400 font-semibold">
-                    {entry.totalScore}
-                  </td>
+      <div className="win-body">
+        {leaderboard.length === 0 ? (
+          <div className="text-center py-8 font-mono">
+            <p className="text-terminal-muted text-sm mb-1">[NO RECORDS FOUND]</p>
+            <p className="text-terminal-muted text-xs mb-4">Database is empty.</p>
+            <Button onClick={newGame}>Start Playing</Button>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left font-mono text-sm" aria-label="Leaderboard rankings">
+              <thead>
+                <tr className="border-b border-crt-border text-xs text-terminal-muted uppercase">
+                  <th className="py-2 px-2 w-8">#</th>
+                  <th className="py-2 px-2">Player</th>
+                  <th className="py-2 px-2 text-center">W</th>
+                  <th className="py-2 px-2 text-center">L</th>
+                  <th className="py-2 px-2 text-center">GP</th>
+                  <th className="py-2 px-2 text-center">PTS</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {leaderboard.map((entry, i) => (
+                  <tr
+                    key={entry.playerName}
+                    className="border-b border-crt-border hover:bg-crt-lighter transition-colors"
+                  >
+                    <td className="py-2 px-2">
+                      {i === 0 && <span className="text-amber-terminal font-bold text-glow-amber">01</span>}
+                      {i === 1 && <span className="text-terminal-dim">02</span>}
+                      {i === 2 && <span className="text-terminal-muted">03</span>}
+                      {i > 2 && <span className="text-terminal-muted">{String(i + 1).padStart(2, '0')}</span>}
+                    </td>
+                    <td className="py-2 px-2 text-terminal-green">
+                      {entry.playerName}
+                    </td>
+                    <td className="py-2 px-2 text-center text-terminal-dim">
+                      {entry.wins}
+                    </td>
+                    <td className="py-2 px-2 text-center text-error-red">
+                      {entry.losses}
+                    </td>
+                    <td className="py-2 px-2 text-center text-terminal-muted">
+                      {entry.gamesPlayed}
+                    </td>
+                    <td className="py-2 px-2 text-center text-amber-terminal font-bold">
+                      {entry.totalScore}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      <div className="mt-6 text-center">
-        <Button variant="ghost" onClick={newGame}>
-          Back to Setup
-        </Button>
+        <div className="terminal-divider" />
+
+        <div className="text-center">
+          <Button variant="ghost" onClick={newGame}>
+            Back
+          </Button>
+        </div>
       </div>
     </section>
   );

@@ -134,7 +134,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         },
       });
     } catch (err) {
-      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : 'Failed to submit guess' });
+      const msg = err instanceof Error ? err.message : 'Failed to submit guess';
+      if (msg.toLowerCase().includes('not found')) {
+        dispatch({ type: 'RESET' });
+        dispatch({ type: 'SET_ERROR', payload: 'Game session expired. Please start a new game.' });
+        return;
+      }
+      dispatch({ type: 'SET_ERROR', payload: msg });
     }
   }, [state.game]);
 
@@ -166,7 +172,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
         },
       });
     } catch (err) {
-      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : 'AI guess failed' });
+      const msg = err instanceof Error ? err.message : 'AI guess failed';
+      if (msg.toLowerCase().includes('not found')) {
+        dispatch({ type: 'RESET' });
+        dispatch({ type: 'SET_ERROR', payload: 'Game session expired. Please start a new game.' });
+        return;
+      }
+      dispatch({ type: 'SET_ERROR', payload: msg });
     }
   }, [state.game]);
 

@@ -39,7 +39,7 @@ export default function GameBoard() {
 
   if (game.status !== 'IN_PROGRESS') {
     return (
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-5">
         <MaskedWord maskedWord={game.maskedWord} />
         <GameOver game={game} onNewGame={newGame} onLeaderboard={() => { setView('leaderboard'); }} />
       </div>
@@ -47,26 +47,26 @@ export default function GameBoard() {
   }
 
   return (
-    <div className="flex flex-col gap-6 animate-slide-up">
+    <div className="flex flex-col gap-4 animate-slide-up">
       {error && <ErrorBanner message={error} onDismiss={dismissError} />}
 
       {lastGuessResult && (
         <div
-          className={`text-center text-sm font-medium py-1.5 rounded-lg ${
+          className={`text-center text-xs font-mono py-1.5 border ${
             lastGuessResult.correct
-              ? 'bg-brand-green-900/30 text-brand-green-300'
-              : 'bg-red-900/30 text-red-300'
+              ? 'border-terminal-dark bg-terminal-bg text-terminal-green'
+              : 'border-error-border bg-error-bg text-error-red'
           }`}
           role="status"
         >
           {lastGuessResult.correct
-            ? `"${lastGuessResult.guess.toUpperCase()}" is correct!`
-            : `"${lastGuessResult.guess.toUpperCase()}" is not in the word.`}
+            ? `[OK] "${lastGuessResult.guess.toUpperCase()}" found in target`
+            : `[MISS] "${lastGuessResult.guess.toUpperCase()}" not in target`}
         </div>
       )}
 
-      <div className="text-center text-xs text-gray-500 capitalize">
-        {game.category} &middot; {game.difficulty}
+      <div className="text-center text-xs font-mono text-terminal-muted uppercase tracking-wider">
+        [{game.category} / {game.difficulty}]
       </div>
 
       <MaskedWord maskedWord={game.maskedWord} />

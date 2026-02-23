@@ -65,70 +65,81 @@ export default function AiGameSetup() {
 
   const isValid = word.trim().length >= 3 && !wordError;
 
-  if (loadingCategories) return <Loading message="Loading..." />;
+  if (loadingCategories) return <Loading message="Loading AI subsystem..." />;
 
   return (
-    <section className="card max-w-lg mx-auto animate-slide-up" aria-label="AI opponent setup">
-      <h2 className="text-2xl font-bold text-center mb-2 text-brand-green-400">
-        Challenge the AI
-      </h2>
-      <p className="text-center text-gray-400 text-sm mb-6">
-        Pick a secret word and watch the AI try to guess it
-      </p>
+    <section className="win-window max-w-lg mx-auto animate-slide-up" aria-label="AI opponent setup">
+      <div className="win-titlebar">
+        <span className="win-titlebar-text">AI_CHALLENGE.EXE</span>
+        <div className="win-titlebar-buttons">
+          <span className="win-titlebar-btn">?</span>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <Input
-          label="Your Secret Word"
-          placeholder="e.g. elephant"
-          value={word}
-          onChange={(e) => setWord(e.target.value.replace(/[^a-zA-Z]/g, ''))}
-          maxLength={15}
-          error={wordError}
-          autoComplete="off"
-        />
-
-        <label className="flex items-center gap-2.5 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            checked={giveHint}
-            onChange={(e) => setGiveHint(e.target.checked)}
-            className="w-4 h-4 rounded border-surface-500 bg-surface-700 text-brand-green-500 focus:ring-brand-green-500 focus:ring-offset-0"
-          />
-          <span className="text-sm text-gray-400">
-            Give the AI a category hint
-          </span>
-        </label>
-
-        {giveHint && (
-          <Select
-            label="Category Hint"
-            options={categoryOptions}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          />
-        )}
-
-        <p className="text-xs text-gray-600 text-center">
-          {giveHint
-            ? 'The AI will narrow its search to this category'
-            : 'The AI will search across all categories — harder to guess!'}
+      <div className="win-body">
+        <div className="text-xs font-mono text-terminal-muted mb-1">
+          C:\CODEWORDS&gt; <span className="text-terminal-green">load --ai-opponent</span>
+        </div>
+        <p className="text-xs font-mono text-terminal-muted mb-4">
+          Enter a secret word. The AI will attempt to crack it.
         </p>
 
-        <div className="flex gap-3 pt-2">
-          <Button
-            type="submit"
-            size="lg"
-            className="flex-1"
-            loading={state.loading}
-            disabled={!isValid}
-          >
-            Start Challenge
-          </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={() => setView('setup')}>
-            Back
-          </Button>
-        </div>
-      </form>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Input
+            label="Secret Word"
+            placeholder="e.g. elephant"
+            value={word}
+            onChange={(e) => setWord(e.target.value.replace(/[^a-zA-Z]/g, ''))}
+            maxLength={15}
+            error={wordError}
+            autoComplete="off"
+          />
+
+          <label className="flex items-center gap-2 cursor-pointer select-none font-mono text-xs">
+            <input
+              type="checkbox"
+              checked={giveHint}
+              onChange={(e) => setGiveHint(e.target.checked)}
+              className="w-3.5 h-3.5 bg-crt-black border-crt-border text-terminal-green focus:ring-terminal-dark focus:ring-offset-0 accent-green-600"
+            />
+            <span className="text-terminal-muted">
+              Provide category hint to AI
+            </span>
+          </label>
+
+          {giveHint && (
+            <Select
+              label="Category Hint"
+              options={categoryOptions}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+          )}
+
+          <p className="text-[10px] font-mono text-terminal-muted text-center uppercase tracking-wider">
+            {giveHint
+              ? '[MODE: CATEGORY-ASSISTED SEARCH]'
+              : '[MODE: FULL DICTIONARY SCAN]'}
+          </p>
+
+          <div className="terminal-divider" />
+
+          <div className="flex gap-2">
+            <Button
+              type="submit"
+              size="lg"
+              className="flex-1"
+              loading={state.loading}
+              disabled={!isValid}
+            >
+              Deploy AI
+            </Button>
+            <Button type="button" variant="ghost" size="lg" onClick={() => setView('setup')}>
+              Back
+            </Button>
+          </div>
+        </form>
+      </div>
     </section>
   );
 }

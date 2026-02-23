@@ -2,67 +2,246 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Righteous&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @layer base {
   body {
-    @apply bg-surface-900 text-gray-100 antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    @apply bg-crt-black text-terminal-green antialiased;
+    font-family: 'JetBrains Mono', monospace;
+    image-rendering: auto;
+  }
+
+  ::selection {
+    background: #00ff4140;
+    color: #00ff41;
   }
 }
 
 @layer components {
+  /* ── CRT Monitor Effects ── */
+  .crt-screen {
+    position: relative;
+    animation: flicker 4s infinite;
+  }
+
+  .crt-screen::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 65, 0.03) 0px,
+      rgba(0, 255, 65, 0.03) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  .crt-screen::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 60%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    pointer-events: none;
+    z-index: 9998;
+  }
+
+  /* ── Window Chrome (Win 2000 style) ── */
+  .win-window {
+    @apply border border-crt-border bg-crt-surface;
+    box-shadow: 
+      1px 1px 0 #00ff4115,
+      -1px -1px 0 #00000080,
+      inset 1px 1px 0 #00ff4110;
+  }
+
+  .win-titlebar {
+    @apply flex items-center justify-between px-3 py-1.5
+      bg-gradient-to-r from-win-titlebar to-win-titlebar-active
+      border-b border-crt-border;
+    background: linear-gradient(
+      180deg,
+      #004d26 0%,
+      #003318 40%,
+      #002a15 100%
+    );
+  }
+
+  .win-titlebar-text {
+    @apply font-terminal text-lg text-terminal-green tracking-wider;
+    text-shadow: 0 0 6px #00ff4180;
+  }
+
+  .win-titlebar-buttons {
+    @apply flex gap-1;
+  }
+
+  .win-titlebar-btn {
+    @apply w-5 h-4 flex items-center justify-center
+      text-[10px] font-mono leading-none
+      border border-crt-border bg-crt-surface
+      text-terminal-muted hover:text-terminal-green
+      hover:bg-crt-lighter transition-colors cursor-pointer;
+  }
+
+  .win-body {
+    @apply p-5;
+  }
+
+  /* ── Terminal Card ── */
+  .card {
+    @apply win-window;
+  }
+
+  /* ── Letter Tiles (Terminal Style) ── */
   .letter-tile {
     @apply flex items-center justify-center
-      w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-[4.5rem]
-      rounded-lg font-mono text-2xl sm:text-3xl font-bold
-      border-2 transition-all duration-200;
+      w-10 h-12 sm:w-12 sm:h-14 md:w-14 md:h-16
+      font-terminal text-3xl sm:text-4xl font-bold
+      border transition-all duration-200;
   }
 
   .letter-tile--blank {
-    @apply border-surface-500 bg-surface-700 text-gray-500;
+    @apply border-crt-border bg-crt-black text-terminal-muted;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.8);
+  }
+
+  .letter-tile--blank::after {
+    content: '▓';
+    @apply text-terminal-muted opacity-30;
   }
 
   .letter-tile--revealed {
-    @apply border-brand-green-500 bg-brand-green-900/40 text-brand-green-300 animate-bounce-in;
+    @apply border-terminal-dim bg-terminal-bg text-terminal-green animate-bounce-in;
+    text-shadow: 0 0 8px #00ff4180, 0 0 16px #00ff4140;
+    box-shadow: 0 0 6px #00ff4120, inset 0 0 8px #00ff4108;
   }
 
+  /* ── Keyboard Keys (Terminal Style) ── */
   .keyboard-key {
     @apply flex items-center justify-center
-      min-w-[2rem] h-12 sm:min-w-[2.5rem] sm:h-14
-      rounded-md font-semibold text-sm sm:text-base
-      transition-all duration-150 cursor-pointer select-none
-      active:scale-95;
+      min-w-[2rem] h-11 sm:min-w-[2.5rem] sm:h-12
+      font-terminal text-lg sm:text-xl
+      border transition-all duration-100 cursor-pointer select-none;
   }
 
   .keyboard-key--default {
-    @apply bg-surface-600 text-gray-200 hover:bg-surface-500;
+    @apply bg-crt-surface text-terminal-dim border-crt-border
+      hover:text-terminal-green hover:border-terminal-dark hover:bg-crt-lighter;
+    box-shadow: 1px 1px 0 #00ff4110, -1px -1px 0 #00000060;
+  }
+
+  .keyboard-key--default:active {
+    box-shadow: inset 1px 1px 0 #000000, inset -1px -1px 0 #00ff4110;
   }
 
   .keyboard-key--correct {
-    @apply bg-brand-green-600 text-white;
+    @apply bg-terminal-bg text-terminal-green border-terminal-dim;
+    text-shadow: 0 0 6px #00ff4180;
+    box-shadow: 0 0 4px #00ff4120;
   }
 
   .keyboard-key--wrong {
-    @apply bg-red-900/60 text-red-300;
+    @apply bg-error-bg text-error-red border-error-border opacity-60;
   }
 
   .keyboard-key--disabled {
-    @apply bg-surface-700 text-gray-600 cursor-not-allowed;
+    @apply bg-crt-black text-terminal-muted border-crt-border cursor-not-allowed opacity-40;
   }
 
-  .card {
-    @apply bg-surface-800 border border-surface-600 rounded-xl p-6;
+  /* ── Status Bar (bottom bar like Windows) ── */
+  .status-bar {
+    @apply flex items-center gap-4 px-3 py-1
+      border-t border-crt-border bg-crt-surface
+      text-xs font-mono text-terminal-muted;
+  }
+
+  .status-bar-section {
+    @apply px-2 py-0.5 border border-crt-border;
+    box-shadow: inset 1px 1px 0 #00000040;
+  }
+
+  /* ── Terminal Text Effects ── */
+  .text-glow {
+    text-shadow: 0 0 4px #00ff4180, 0 0 8px #00ff4140;
+  }
+
+  .text-glow-amber {
+    text-shadow: 0 0 4px #ffb00080, 0 0 8px #ffb00040;
+  }
+
+  .text-glow-red {
+    text-shadow: 0 0 4px #ff003380, 0 0 8px #ff003340;
+  }
+
+  /* ── Blinking Cursor ── */
+  .cursor-blink::after {
+    content: '█';
+    @apply animate-blink text-terminal-green ml-0.5;
+  }
+
+  /* ── Progress dots (attempts) ── */
+  .attempt-dot {
+    @apply w-2.5 h-2.5 border transition-colors;
+  }
+
+  .attempt-dot--active {
+    @apply border-terminal-dim bg-terminal-green;
+    box-shadow: 0 0 4px #00ff4160;
+  }
+
+  .attempt-dot--used {
+    @apply border-error-border bg-error-red;
+    box-shadow: 0 0 4px #ff003340;
+  }
+
+  /* ── Separator ── */
+  .terminal-divider {
+    @apply border-0 h-px my-3;
+    background: repeating-linear-gradient(
+      90deg,
+      #1a3a1a 0px,
+      #1a3a1a 4px,
+      transparent 4px,
+      transparent 8px
+    );
   }
 }
 
+/* ── Scrollbar ── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 12px;
 }
 ::-webkit-scrollbar-track {
-  background: theme('colors.surface.900');
+  background: #0a0e0a;
+  border-left: 1px solid #1a3a1a;
 }
 ::-webkit-scrollbar-thumb {
-  background: theme('colors.surface.600');
-  border-radius: 3px;
+  background: #1a3a1a;
+  border: 1px solid #003318;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #004d26;
+}
+
+/* ── Animations ── */
+@keyframes flicker {
+  0% { opacity: 0.97; }
+  5% { opacity: 0.95; }
+  10% { opacity: 0.98; }
+  15% { opacity: 0.96; }
+  20% { opacity: 0.99; }
+  100% { opacity: 0.98; }
 }

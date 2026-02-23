@@ -27,25 +27,28 @@ export default function GuessInput({ onSubmit, disabled = false, loading = false
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-2 max-w-sm mx-auto">
-      <input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value.replace(/[^a-zA-Z]/g, ''))}
-        placeholder="Guess a letter or word..."
-        disabled={disabled}
-        maxLength={30}
-        className="
-          flex-1 bg-surface-700 border border-surface-500 rounded-lg
-          px-4 py-2.5 text-gray-200 placeholder-gray-500 font-mono
-          focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent
-          disabled:opacity-50
-        "
-        aria-label="Enter your guess"
-        autoComplete="off"
-      />
+      <div className="flex-1 flex items-center bg-crt-black border border-crt-border">
+        <span className="text-terminal-muted text-xs font-mono pl-2 select-none">{'>'}</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={value}
+          onChange={(e) => setValue(e.target.value.replace(/[^a-zA-Z]/g, ''))}
+          placeholder="guess..."
+          disabled={disabled}
+          maxLength={30}
+          className="
+            flex-1 bg-transparent font-mono
+            px-2 py-2 text-sm text-terminal-green placeholder-terminal-muted
+            focus:outline-none
+            disabled:opacity-40 caret-terminal-green
+          "
+          aria-label="Enter your guess"
+          autoComplete="off"
+        />
+      </div>
       <Button type="submit" disabled={disabled || !value.trim()} loading={loading}>
-        Guess
+        Enter
       </Button>
     </form>
   );

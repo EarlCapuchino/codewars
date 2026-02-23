@@ -89,78 +89,95 @@ export default function GameSetup() {
   }, [difficulty, playerCount]);
 
   if (loadingCategories) {
-    return <Loading message="Loading categories..." />;
+    return <Loading message="Initializing system..." />;
   }
 
   return (
-    <section className="card max-w-lg mx-auto animate-slide-up" aria-label="Game setup">
-      <h2 className="text-2xl font-bold text-center mb-6 text-brand-green-400">New Game</h2>
+    <section className="win-window max-w-lg mx-auto animate-slide-up" aria-label="Game setup">
+      <div className="win-titlebar">
+        <span className="win-titlebar-text">NEW_GAME.EXE</span>
+        <div className="win-titlebar-buttons">
+          <span className="win-titlebar-btn">?</span>
+        </div>
+      </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <Select
-          label="Number of Players"
-          options={PLAYER_COUNT_OPTIONS}
-          value={String(playerCount)}
-          onChange={(e) => handlePlayerCountChange(Number(e.target.value))}
-        />
-
-        <Select
-          label="Difficulty"
-          options={DIFFICULTY_OPTIONS}
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value as Difficulty)}
-        />
-
-        <Select
-          label="Category"
-          options={categoryOptions}
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-
-        <p className="text-xs text-gray-500 text-center">
-          Target word length: ~{wordLengthHint} letters
-        </p>
-
-        <fieldset className="flex flex-col gap-3">
-          <legend className="text-sm font-medium text-gray-400 mb-2">Player Names</legend>
-          {Array.from({ length: playerCount }, (_, i) => (
-            <Input
-              key={i}
-              placeholder={`Player ${i + 1}`}
-              value={playerNames[i] || ''}
-              onChange={(e) => handleNameChange(i, e.target.value)}
-              maxLength={20}
-              aria-label={`Name for player ${i + 1}`}
-            />
-          ))}
-        </fieldset>
-
-        <div className="flex gap-3 pt-2">
-          <Button type="submit" size="lg" className="flex-1" loading={state.loading}>
-            Start Game
-          </Button>
-          <Button type="button" variant="ghost" size="lg" onClick={() => setView('leaderboard')}>
-            Leaderboard
-          </Button>
+      <div className="win-body">
+        <div className="text-xs font-mono text-terminal-muted mb-4">
+          C:\CODEWORDS&gt; <span className="text-terminal-green">init --new-game</span>
         </div>
 
-        <div className="relative flex items-center gap-3 pt-2">
-          <div className="flex-1 border-t border-surface-600" />
-          <span className="text-xs text-gray-500 uppercase tracking-wider">or</span>
-          <div className="flex-1 border-t border-surface-600" />
-        </div>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Select
+            label="Number of Players"
+            options={PLAYER_COUNT_OPTIONS}
+            value={String(playerCount)}
+            onChange={(e) => handlePlayerCountChange(Number(e.target.value))}
+          />
 
-        <Button
-          type="button"
-          variant="secondary"
-          size="lg"
-          className="w-full"
-          onClick={() => setView('ai-setup')}
-        >
-          Challenge the AI
-        </Button>
-      </form>
+          <Select
+            label="Difficulty"
+            options={DIFFICULTY_OPTIONS}
+            value={difficulty}
+            onChange={(e) => setDifficulty(e.target.value as Difficulty)}
+          />
+
+          <Select
+            label="Category"
+            options={categoryOptions}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+
+          <div className="terminal-divider" />
+
+          <p className="text-xs font-mono text-terminal-muted text-center">
+            [TARGET WORD LENGTH: ~{wordLengthHint} CHARS]
+          </p>
+
+          <fieldset className="flex flex-col gap-2">
+            <legend className="text-xs font-mono text-terminal-muted uppercase tracking-wider mb-1">
+              {'>'} Player Names
+            </legend>
+            {Array.from({ length: playerCount }, (_, i) => (
+              <Input
+                key={i}
+                placeholder={`Player ${i + 1}`}
+                value={playerNames[i] || ''}
+                onChange={(e) => handleNameChange(i, e.target.value)}
+                maxLength={20}
+                aria-label={`Name for player ${i + 1}`}
+              />
+            ))}
+          </fieldset>
+
+          <div className="terminal-divider" />
+
+          <div className="flex gap-2">
+            <Button type="submit" size="lg" className="flex-1" loading={state.loading}>
+              Start Game
+            </Button>
+            <Button type="button" variant="ghost" size="lg" onClick={() => setView('leaderboard')}>
+              Scores
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 border-t border-crt-border" />
+            <span className="text-xs text-terminal-muted font-mono">OR</span>
+            <div className="flex-1 border-t border-crt-border" />
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            onClick={() => setView('ai-setup')}
+          >
+            Challenge the AI
+          </Button>
+        </form>
+      </div>
     </section>
   );
 }

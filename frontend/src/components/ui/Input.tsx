@@ -10,26 +10,33 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id || label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         {label && (
-          <label htmlFor={inputId} className="text-sm font-medium text-gray-400">
-            {label}
+          <label htmlFor={inputId} className="text-xs font-mono text-terminal-muted uppercase tracking-wider">
+            {'>'} {label}
           </label>
         )}
         <input
           ref={ref}
           id={inputId}
           className={`
-            bg-surface-700 border rounded-lg
-            px-4 py-2.5 text-gray-200 placeholder-gray-500
-            focus:outline-none focus:ring-2 focus:ring-brand-green-500 focus:border-transparent
-            transition-colors
-            ${error ? 'border-red-500' : 'border-surface-500'}
+            bg-crt-black border font-mono
+            px-3 py-2 text-sm text-terminal-green placeholder-terminal-muted
+            focus:outline-none focus:border-terminal-dark focus:text-terminal-bright
+            transition-colors caret-terminal-green
+            ${error ? 'border-error-border' : 'border-crt-border'}
             ${className}
           `}
+          style={{
+            boxShadow: 'inset 1px 1px 3px rgba(0, 0, 0, 0.8), inset -1px -1px 1px rgba(0, 255, 65, 0.03)',
+          }}
           {...props}
         />
-        {error && <p className="text-sm text-red-400" role="alert">{error}</p>}
+        {error && (
+          <p className="text-xs font-mono text-error-red" role="alert">
+            [ERROR] {error}
+          </p>
+        )}
       </div>
     );
   }
