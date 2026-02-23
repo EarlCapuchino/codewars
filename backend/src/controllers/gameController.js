@@ -1,4 +1,5 @@
 const gameService = require('../services/gameService');
+const wordRepo = require('../data/WordRepository');
 const logger = require('../utils/logger');
 
 const CTX = 'GameController';
@@ -57,10 +58,20 @@ function resetLeaderboard(_req, res, next) {
   }
 }
 
+function getCategories(_req, res, next) {
+  try {
+    const data = wordRepo.getCategoryList();
+    res.status(200).json(createSuccessResponse(data));
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createGame,
   makeGuess,
   getGameState,
   getLeaderboard,
   resetLeaderboard,
+  getCategories,
 };

@@ -1,22 +1,18 @@
 'use client';
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import Button from '@/components/ui/Button';
 import Select from '@/components/ui/Select';
 import Input from '@/components/ui/Input';
+import Loading from '@/components/ui/Loading';
 import { useGameContext } from '@/contexts/GameContext';
-import type { Difficulty, Category } from '@/types/game';
+import { getCategories } from '@/services/api';
+import type { Difficulty, CategoryInfo } from '@/types/game';
 
 const DIFFICULTY_OPTIONS = [
   { value: 'easy', label: 'Easy (shorter words)' },
   { value: 'average', label: 'Average' },
   { value: 'hard', label: 'Hard (longer words)' },
-];
-
-const CATEGORY_OPTIONS = [
-  { value: 'animals', label: 'Animals' },
-  { value: 'fruits', label: 'Fruits' },
-  { value: 'food', label: 'Food' },
 ];
 
 const PLAYER_COUNT_OPTIONS = Array.from({ length: 5 }, (_, i) => ({
@@ -28,8 +24,38 @@ export default function GameSetup() {
   const { startGame, setView, state } = useGameContext();
   const [playerCount, setPlayerCount] = useState(1);
   const [difficulty, setDifficulty] = useState<Difficulty>('average');
-  const [category, setCategory] = useState<Category>('animals');
+  const [category, setCategory] = useState('animals');
   const [playerNames, setPlayerNames] = useState<string[]>(['']);
+  const [categories, setCategories] = useState<CategoryInfo[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingCategories(true);
+    getCategories()
+      .then((data) => {
+        if (!cancelled) {
+          setCategories(data);
+          if (data.length > 0 && !data.find((c) => c.id === category)) {
+            setCategory(data[0].id);
+          }
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCategories([{ id: 'animals', label: 'Animals' }]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingCategories(false);
+      });
+    return () => { cancelled = true; };
+  }, []);
+
+  const categoryOptions = useMemo(
+    () => categories.map((c) => ({ value: c.id, label: c.label })),
+    [categories]
+  );
 
   const handlePlayerCountChange = useCallback((count: number) => {
     setPlayerCount(count);
@@ -62,6 +88,10 @@ export default function GameSetup() {
     return base + (playerCount - 1);
   }, [difficulty, playerCount]);
 
+  if (loadingCategories) {
+    return <Loading message="Loading categories..." />;
+  }
+
   return (
     <section className="card max-w-lg mx-auto animate-slide-up" aria-label="Game setup">
       <h2 className="text-2xl font-bold text-center mb-6 text-brand-green-400">New Game</h2>
@@ -83,9 +113,9 @@ export default function GameSetup() {
 
         <Select
           label="Category"
-          options={CATEGORY_OPTIONS}
+          options={categoryOptions}
           value={category}
-          onChange={(e) => setCategory(e.target.value as Category)}
+          onChange={(e) => setCategory(e.target.value)}
         />
 
         <p className="text-xs text-gray-500 text-center">

@@ -4,6 +4,7 @@ const { validateCreateGame, validateGuess } = require('../../middleware/validati
 
 const router = Router();
 
+router.get('/categories', gameController.getCategories);
 router.post('/game', validateCreateGame, gameController.createGame);
 router.post('/game/:gameId/guess', validateGuess, gameController.makeGuess);
 router.get('/game/:gameId', gameController.getGameState);

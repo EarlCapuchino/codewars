@@ -1,6 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import type {
   ApiResponse,
+  CategoryInfo,
   CreateGamePayload,
   GameResponse,
   GameState,
@@ -71,6 +72,15 @@ export async function getLeaderboard(): Promise<LeaderboardEntry[]> {
 export async function resetLeaderboard(): Promise<void> {
   try {
     await client.delete('/leaderboard');
+  } catch (err) {
+    return handleError(err);
+  }
+}
+
+export async function getCategories(): Promise<CategoryInfo[]> {
+  try {
+    const res = await client.get<ApiResponse<CategoryInfo[]>>('/categories');
+    return extractData(res);
   } catch (err) {
     return handleError(err);
   }

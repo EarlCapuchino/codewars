@@ -1,6 +1,11 @@
 export type Difficulty = 'easy' | 'average' | 'hard';
-export type Category = 'animals' | 'fruits' | 'food';
+export type Category = string;
 export type GameStatus = 'IN_PROGRESS' | 'WON' | 'LOST';
+
+export interface CategoryInfo {
+  id: string;
+  label: string;
+}
 
 export interface Player {
   id: string;
