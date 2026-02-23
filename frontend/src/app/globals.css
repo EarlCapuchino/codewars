@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Righteous&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    @apply bg-surface-900 text-gray-100 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .letter-tile {
+    @apply flex items-center justify-center
+      w-12 h-14 sm:w-14 sm:h-16 md:w-16 md:h-[4.5rem]
+      rounded-lg font-mono text-2xl sm:text-3xl font-bold
+      border-2 transition-all duration-200;
+  }
+
+  .letter-tile--blank {
+    @apply border-surface-500 bg-surface-700 text-gray-500;
+  }
+
+  .letter-tile--revealed {
+    @apply border-brand-green-500 bg-brand-green-900/40 text-brand-green-300 animate-bounce-in;
+  }
+
+  .keyboard-key {
+    @apply flex items-center justify-center
+      min-w-[2rem] h-12 sm:min-w-[2.5rem] sm:h-14
+      rounded-md font-semibold text-sm sm:text-base
+      transition-all duration-150 cursor-pointer select-none
+      active:scale-95;
+  }
+
+  .keyboard-key--default {
+    @apply bg-surface-600 text-gray-200 hover:bg-surface-500;
+  }
+
+  .keyboard-key--correct {
+    @apply bg-brand-green-600 text-white;
+  }
+
+  .keyboard-key--wrong {
+    @apply bg-red-900/60 text-red-300;
+  }
+
+  .keyboard-key--disabled {
+    @apply bg-surface-700 text-gray-600 cursor-not-allowed;
+  }
+
+  .card {
+    @apply bg-surface-800 border border-surface-600 rounded-xl p-6;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: theme('colors.surface.900');
+}
+::-webkit-scrollbar-thumb {
+  background: theme('colors.surface.600');
+  border-radius: 3px;
+}
