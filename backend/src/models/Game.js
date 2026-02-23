@@ -15,6 +15,7 @@ class Game {
     this.category = category;
     this.status = Status.IN_PROGRESS;
     this.guessedLetters = new Set();
+    this.failedWordGuesses = new Set();
     this.players = playerNames.map((name, i) => new Player(name, i));
     this.currentPlayerIndex = 0;
     this.winner = null;
@@ -90,6 +91,7 @@ class Game {
       return { correct: true, status: this.status };
     }
 
+    this.failedWordGuesses.add(lower);
     this.currentPlayer.useAttempt();
 
     if (this.activePlayers.length === 0) {
@@ -109,6 +111,7 @@ class Game {
       difficulty: this.difficulty,
       category: this.category,
       guessedLetters: [...this.guessedLetters].sort(),
+      failedWordGuesses: [...this.failedWordGuesses],
       players: this.players.map((p) => p.toJSON()),
       currentPlayer: this.currentPlayer ? this.currentPlayer.toJSON() : null,
       currentPlayerIndex: this.currentPlayerIndex,

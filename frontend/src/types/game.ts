@@ -21,11 +21,13 @@ export interface GameState {
   difficulty: Difficulty;
   category: Category;
   guessedLetters: string[];
+  failedWordGuesses: string[];
   players: Player[];
   currentPlayer: Player | null;
   currentPlayerIndex: number;
   winner?: Player;
   word?: string;
+  isAiGame?: boolean;
 }
 
 export interface GuessResult {
@@ -68,4 +70,22 @@ export interface ApiResponse<T> {
   };
 }
 
-export type AppView = 'setup' | 'game' | 'leaderboard';
+export interface CreateAiGamePayload {
+  word: string;
+  category?: Category;
+}
+
+export interface AiMove {
+  guess: string;
+  strategy: string;
+  candidatesRemaining: number;
+  confidence: number;
+}
+
+export interface AiGuessResponse extends GameResponse {
+  aiMove: AiMove;
+  word: string;
+  isAiGame: boolean;
+}
+
+export type AppView = 'setup' | 'game' | 'leaderboard' | 'ai-setup' | 'ai-game';

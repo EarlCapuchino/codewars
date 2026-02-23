@@ -76,8 +76,10 @@ Base URL: `http://localhost:8080/api/v1`
 |---|---|---|
 | `GET` | `/health` | Health check |
 | `POST` | `/game` | Start a new game |
+| `POST` | `/game/ai` | Start an AI opponent game |
 | `GET` | `/game/:gameId` | Get current game state |
 | `POST` | `/game/:gameId/guess` | Submit a guess |
+| `POST` | `/game/:gameId/ai-guess` | Request AI's next guess |
 | `GET` | `/leaderboard` | Get leaderboard rankings |
 | `DELETE` | `/leaderboard` | Reset leaderboard |
 
@@ -98,6 +100,41 @@ Base URL: `http://localhost:8080/api/v1`
 {
   "guess": "e",
   "playerId": "uuid-of-current-player"
+}
+```
+
+### Create AI Game – `POST /api/v1/game/ai`
+
+```json
+{
+  "word": "elephant",
+  "category": "animals"
+}
+```
+
+`category` is optional. When provided it gives the AI a hint to narrow its search; when omitted the AI searches across all categories.
+
+### Request AI Guess – `POST /api/v1/game/:gameId/ai-guess`
+
+No request body. The AI analyses the current game state (masked word, guessed letters, category) and returns its best guess along with strategy metadata:
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "abc123",
+    "maskedWord": "e _ e _ _ _ _ _",
+    "status": "IN_PROGRESS",
+    "guessResult": { "guess": "e", "correct": true },
+    "aiMove": {
+      "guess": "e",
+      "strategy": "candidate_elimination",
+      "candidatesRemaining": 12,
+      "confidence": 0.75
+    },
+    "word": "elephant",
+    "isAiGame": true
+  }
 }
 ```
 
@@ -165,6 +202,7 @@ Open **http://localhost:3000** in your browser.
 - **Physical keyboard support** – type letters directly
 - **Leaderboard** tracking wins, losses, and scores
 - **AI word generation** via Datamuse API with local fallback
+- **AI opponent mode** – you pick the word, the AI tries to guess it using candidate elimination and letter frequency analysis
 
 ---
 
@@ -181,7 +219,6 @@ Open **http://localhost:3000** in your browser.
 
 ## Future Improvements
 
-- AI opponent mode (bot guesses using letter frequency analysis)
 - Timed rounds for added pressure
 - Game history and replay
 - Custom word input (host picks the word)

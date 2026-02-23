@@ -13,6 +13,8 @@ import type {
   GameResponse,
   GuessResult,
   CreateGamePayload,
+  CreateAiGamePayload,
+  AiMove,
   AppView,
   LeaderboardEntry,
 } from '@/types/game';
@@ -22,6 +24,7 @@ interface State {
   view: AppView;
   game: GameState | null;
   lastGuessResult: GuessResult | null;
+  aiMove: AiMove | null;
   leaderboard: LeaderboardEntry[];
   loading: boolean;
   error: string | null;
@@ -33,6 +36,7 @@ type Action =
   | { type: 'SET_ERROR'; payload: string | null }
   | { type: 'SET_GAME'; payload: GameState }
   | { type: 'SET_GUESS_RESULT'; payload: { game: GameState; guessResult: GuessResult } }
+  | { type: 'SET_AI_GUESS_RESULT'; payload: { game: GameState; guessResult: GuessResult; aiMove: AiMove } }
   | { type: 'SET_LEADERBOARD'; payload: LeaderboardEntry[] }
   | { type: 'RESET' };
 
@@ -40,6 +44,7 @@ const initialState: State = {
   view: 'setup',
   game: null,
   lastGuessResult: null,
+  aiMove: null,
   leaderboard: [],
   loading: false,
   error: null,
@@ -54,12 +59,21 @@ function reducer(state: State, action: Action): State {
     case 'SET_ERROR':
       return { ...state, error: action.payload, loading: false };
     case 'SET_GAME':
-      return { ...state, game: action.payload, lastGuessResult: null, loading: false, error: null };
+      return { ...state, game: action.payload, lastGuessResult: null, aiMove: null, loading: false, error: null };
     case 'SET_GUESS_RESULT':
       return {
         ...state,
         game: action.payload.game,
         lastGuessResult: action.payload.guessResult,
+        loading: false,
+        error: null,
+      };
+    case 'SET_AI_GUESS_RESULT':
+      return {
+        ...state,
+        game: action.payload.game,
+        lastGuessResult: action.payload.guessResult,
+        aiMove: action.payload.aiMove,
         loading: false,
         error: null,
       };
@@ -76,6 +90,8 @@ interface GameContextType {
   state: State;
   startGame: (payload: CreateGamePayload) => Promise<void>;
   submitGuess: (guess: string) => Promise<void>;
+  startAiGame: (payload: CreateAiGamePayload) => Promise<void>;
+  requestAiGuess: () => Promise<void>;
   fetchLeaderboard: () => Promise<void>;
   clearLeaderboard: () => Promise<void>;
   setView: (view: AppView) => void;
@@ -122,6 +138,38 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }
   }, [state.game]);
 
+  const startAiGame = useCallback(async (payload: CreateAiGamePayload) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+    try {
+      const game = await api.createAiGame(payload);
+      dispatch({ type: 'SET_GAME', payload: game });
+      dispatch({ type: 'SET_VIEW', payload: 'ai-game' });
+    } catch (err) {
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : 'Failed to start AI game' });
+    }
+  }, []);
+
+  const requestAiGuess = useCallback(async () => {
+    if (!state.game) return;
+    dispatch({ type: 'SET_LOADING', payload: true });
+    dispatch({ type: 'SET_ERROR', payload: null });
+    try {
+      const response = await api.requestAiGuess(state.game.id);
+      const { guessResult, aiMove, ...gameState } = response;
+      dispatch({
+        type: 'SET_AI_GUESS_RESULT',
+        payload: {
+          game: gameState as GameState,
+          guessResult: guessResult || { guess: aiMove.guess, correct: false, alreadyGuessed: false },
+          aiMove,
+        },
+      });
+    } catch (err) {
+      dispatch({ type: 'SET_ERROR', payload: err instanceof Error ? err.message : 'AI guess failed' });
+    }
+  }, [state.game]);
+
   const fetchLeaderboard = useCallback(async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
@@ -154,8 +202,19 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ state, startGame, submitGuess, fetchLeaderboard, clearLeaderboard, setView, newGame, dismissError }),
-    [state, startGame, submitGuess, fetchLeaderboard, clearLeaderboard, setView, newGame, dismissError]
+    () => ({
+      state,
+      startGame,
+      submitGuess,
+      startAiGame,
+      requestAiGuess,
+      fetchLeaderboard,
+      clearLeaderboard,
+      setView,
+      newGame,
+      dismissError,
+    }),
+    [state, startGame, submitGuess, startAiGame, requestAiGuess, fetchLeaderboard, clearLeaderboard, setView, newGame, dismissError]
   );
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

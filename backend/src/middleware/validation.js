@@ -63,7 +63,33 @@ function validate(schemaOrGetter) {
   };
 }
 
+let _createAiGameSchema = null;
+function getCreateAiGameSchema() {
+  if (!_createAiGameSchema) {
+    const wordRepo = require('../data/WordRepository');
+    const categoryIds = wordRepo.getCategoryIds();
+
+    _createAiGameSchema = Joi.object({
+      word: Joi.string()
+        .trim()
+        .min(3)
+        .max(15)
+        .pattern(/^[a-zA-Z]+$/)
+        .required()
+        .messages({
+          'string.pattern.base': 'Word must contain only letters',
+          'string.min': 'Word must be at least 3 characters',
+          'string.max': 'Word must be at most 15 characters',
+          'any.required': 'Word is required',
+        }),
+      category: Joi.string().valid(...categoryIds).optional(),
+    });
+  }
+  return _createAiGameSchema;
+}
+
 module.exports = {
   validateCreateGame: validate(getCreateGameSchema),
   validateGuess: validate(guessSchema),
+  validateCreateAiGame: validate(getCreateAiGameSchema),
 };

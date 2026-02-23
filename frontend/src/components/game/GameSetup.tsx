@@ -144,6 +144,22 @@ export default function GameSetup() {
             Leaderboard
           </Button>
         </div>
+
+        <div className="relative flex items-center gap-3 pt-2">
+          <div className="flex-1 border-t border-surface-600" />
+          <span className="text-xs text-gray-500 uppercase tracking-wider">or</span>
+          <div className="flex-1 border-t border-surface-600" />
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          size="lg"
+          className="w-full"
+          onClick={() => setView('ai-setup')}
+        >
+          Challenge the AI
+        </Button>
       </form>
     </section>
   );

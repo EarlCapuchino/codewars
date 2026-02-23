@@ -1,7 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import type {
+  AiGuessResponse,
   ApiResponse,
   CategoryInfo,
+  CreateAiGamePayload,
   CreateGamePayload,
   GameResponse,
   GameState,
@@ -80,6 +82,24 @@ export async function resetLeaderboard(): Promise<void> {
 export async function getCategories(): Promise<CategoryInfo[]> {
   try {
     const res = await client.get<ApiResponse<CategoryInfo[]>>('/categories');
+    return extractData(res);
+  } catch (err) {
+    return handleError(err);
+  }
+}
+
+export async function createAiGame(payload: CreateAiGamePayload): Promise<GameState> {
+  try {
+    const res = await client.post<ApiResponse<GameState>>('/game/ai', payload);
+    return extractData(res);
+  } catch (err) {
+    return handleError(err);
+  }
+}
+
+export async function requestAiGuess(gameId: string): Promise<AiGuessResponse> {
+  try {
+    const res = await client.post<ApiResponse<AiGuessResponse>>(`/game/${gameId}/ai-guess`);
     return extractData(res);
   } catch (err) {
     return handleError(err);

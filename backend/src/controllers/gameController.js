@@ -67,6 +67,27 @@ function getCategories(_req, res, next) {
   }
 }
 
+function createAiGame(req, res, next) {
+  try {
+    logger.debug(CTX, 'Creating AI opponent game', req.body);
+    const game = gameService.createAiGame(req.body);
+    res.status(201).json(createSuccessResponse(game));
+  } catch (err) {
+    next(err);
+  }
+}
+
+function aiGuess(req, res, next) {
+  try {
+    const { gameId } = req.params;
+    logger.debug(CTX, `AI guess on game ${gameId}`);
+    const result = gameService.makeAiGuess(gameId);
+    res.status(200).json(createSuccessResponse(result));
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createGame,
   makeGuess,
@@ -74,4 +95,6 @@ module.exports = {
   getLeaderboard,
   resetLeaderboard,
   getCategories,
+  createAiGame,
+  aiGuess,
 };

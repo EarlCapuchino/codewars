@@ -1,5 +1,6 @@
 const { Game, Status } = require('../models/Game');
 const wordService = require('./wordService');
+const aiPlayerService = require('./aiPlayerService');
 const logger = require('../utils/logger');
 const {
   NotFoundError,
@@ -12,6 +13,9 @@ const CTX = 'GameService';
 
 /** In-memory game store */
 const games = new Map();
+
+/** Tracks which games are AI-opponent games */
+const aiGameIds = new Set();
 
 /** In-memory leaderboard: Map<playerName, { wins, losses, totalScore, gamesPlayed }> */
 const leaderboard = new Map();
@@ -134,10 +138,64 @@ function resetLeaderboard() {
   logger.info(CTX, 'Leaderboard reset');
 }
 
+function createAiGame({ word, category }) {
+  const sanitizedWord = word.toLowerCase().trim();
+
+  const game = new Game({
+    word: sanitizedWord,
+    playerNames: ['AI Opponent'],
+    difficulty: 'average',
+    category: category || 'all',
+  });
+
+  games.set(game.id, game);
+  aiGameIds.add(game.id);
+
+  logger.info(CTX, `AI game created: ${game.id}`, {
+    wordLength: sanitizedWord.length,
+    category: game.category,
+  });
+
+  const json = game.toJSON();
+  json.word = game.word;
+  json.isAiGame = true;
+  return json;
+}
+
+function makeAiGuess(gameId) {
+  const game = getGame(gameId);
+
+  if (!aiGameIds.has(gameId)) {
+    throw new ValidationError('Not an AI opponent game');
+  }
+
+  if (game.status !== Status.IN_PROGRESS) {
+    throw new GameOverError();
+  }
+
+  const aiMove = aiPlayerService.getAiGuess({
+    maskedWord: game.maskedWord,
+    guessedLetters: [...game.guessedLetters],
+    category: game.category,
+    failedWordGuesses: [...game.failedWordGuesses],
+  });
+
+  logger.info(CTX, `AI move: "${aiMove.guess}" (${aiMove.strategy}, ${aiMove.candidatesRemaining} candidates)`, { gameId });
+
+  const result = makeGuess(gameId, aiMove.guess, game.currentPlayer.id);
+  result.aiMove = aiMove;
+  result.word = game.word;
+  result.isAiGame = true;
+
+  return result;
+}
+
 module.exports = {
   createGame,
   makeGuess,
   getGameState,
   getLeaderboard,
   resetLeaderboard,
+  createAiGame,
+  makeAiGuess,
 };
